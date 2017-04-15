@@ -8,7 +8,9 @@ Thanks for the inspiration [FSM](http://freesoftwaremagazine.com/articles/create
 
 ### Roadmap
 
-*empty*
+* Add ability to mount & unmount disk images
+* Add mounted-disk indicator
+* Add ability to save disk images in a fixed & optional location
 
 ### Changelog
 
