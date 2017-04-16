@@ -7,24 +7,42 @@
 # Config ----------------------------------------------------------------------------
 LALUVER="0.1"
 LALUNAM="LazyLudicr"
+LALULOC=""
+if [ ! -e $HOME/.dokter/LazyLudicr/laluloc ]; then
+    touch $HOME/.dokter/LazyLudicr/laluloc
+    read -s -p "Enter disk image location: " LALULOC
+    echo "$LALULOC" > $HOME/.dokter/LazyLudicr/laluloc
+    LALUFLS=$(ls $LALULOC)
+else
+    LALULOC=$(cat $HOME/.dokter/LazyLudicr/laluloc)
+    LALUFLS=$(ls $LALULOC)
+fi
 # Function --------------------------------------------------------------------------
 laluclear () {
     LALUVER=""
     LALUNAM=""
+    LALULOC=""
+    LALUFLS=""
     LALUKEY=""
+    LALUIMS=""
+    LALUDSK=""
+    LALUMOT=""
 }
 laluclr () {
     LALUKEY=""
+    LALUIMS=""
+    LALUDSK=""
+    LALUMOT=""
 }
 # -----------------------------------------------------------------------------------
 while :; do
     clear
     echo "$LALUNAM v$LALUVER"
     echo ""
-    echo "1. Create Encrypted Disk Image  |  2. Mount Encrypted Disk Image"
+    echo "1. Create Encrypted Disk Image"
+    echo "2. Mount Encrypted Disk Image  |  3. Unmount Encrypted Disk Image"
     echo ""
     echo "Q. Quit"
-    echo ""
     echo ""
     read -p "Enter option: " -s -n1 LALUKEY
     case "$LALUKEY" in
@@ -37,12 +55,46 @@ while :; do
             read -s -p -n1 "(M)B or (T)B: " LALUMOT
             fallocate -l $LALUIMS$LALUMOT $LALUDSK.iso
             sudo cryptsetup -y luksFormat $LALUDSK.iso
-            sudo cryptsetup luksOpen enc.iso LazyLudicr
+            sudo cryptsetup luksOpen $LALUDSK.iso LazyLudicr
             sudo mkfs.ext4 /dev/mapper/LazyLudicr
-            sudo e2label /dev/mapper/LazyLudicr "$LALUDSK"
+#            sudo e2label /dev/mapper/LazyLudicr "$LALUDSK"
+            sync
             sudo cryptsetup luksClose LazyLudicr
             echo ""
             echo "All done..."
+            read -p "Press (the infamous) any key to continue... " -n1 -s
+            laluclr
+        ;;
+        2)
+            clear
+            echo "$LALUNAM v$LALUVER"
+            echo ""
+            echo "Disk image(s): $LALUFLS"
+            echo ""
+            read -s -p "Enter disk image name: " LALUDSK
+            sudo cryptsetup luksOpen $LALUDSK.iso LazyLudicr
+            sudo mkdir /media/$LALUDSK
+            sudo mount /dev/mapper/LazyLudicr /media/$LALUDSK
+            sudo chown -R $USER:$USER /media/$LALUDSK
+            echo ""
+            echo "$LALUDSK.iso mounted"
+            read -p "Press (the infamous) any key to continue... " -n1 -s
+            laluclr
+        ;;
+        3)
+            clear
+            echo "$LALUNAM v$LALUVER"
+            echo ""
+            echo "Disk image(s): $LALUFLS"
+            echo ""
+            read -s -p "Enter disk image name: " LALUDSK
+            sync
+            sudo unmount /dev/mapper/LazyLudicr /media/$LALUDSK
+            sync
+            sudo cryptsetup luksClose LazyLudicr
+            sudo rmdir /media/$LALUDSK
+            echo ""
+            echo "$LALUDSK.iso unmounted"
             read -p "Press (the infamous) any key to continue... " -n1 -s
             laluclr
         ;;
