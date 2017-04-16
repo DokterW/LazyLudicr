@@ -1,13 +1,19 @@
 #!/bin/bash
-# LazyLudicr v0.1
+# LazyLudicr v0.2
 # Made by Dr. Waldijk
 # Create encrypted disk images with LUKS, the lazy way.
 # Read the README.md for more info, but you will find more info here below.
 # By running this script you agree to the license terms.
 # Config ----------------------------------------------------------------------------
-LALUVER="0.1"
+LALUVER="0.2"
 LALUNAM="LazyLudicr"
 LALULOC=""
+if [ ! -e $HOME/.dokter ]; then
+    mkdir $HOME/.dokter
+fi
+if [ ! -e $HOME/.dokter/LazyLudicr ]; then
+    mkdir $HOME/.dokter/LazyLudicr
+fi
 if [ ! -e $HOME/.dokter/LazyLudicr/laluloc ]; then
     touch $HOME/.dokter/LazyLudicr/laluloc
     read -s -p "Enter disk image location: " LALULOC
